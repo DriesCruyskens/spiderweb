@@ -16,6 +16,7 @@
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
+    "playwright": "^1.61.1",
     "vite": "^6.2.0"
   }
 }

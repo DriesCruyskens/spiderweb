@@ -1,6 +1,6 @@
-import * as dat from "dat-gui";
-import { saveAs } from "file-saver";
-import * as paper from "paper";
+import * as datNs from "dat-gui";
+import * as fileSaverNs from "file-saver";
+import * as paperNs from "paper";
 import seedrandom from "seedrandom";
 import Graph from "./Graph.js";
 import {
@@ -15,6 +15,10 @@ import {
 } from "./geometry.js";
 import { twoApproxMetricTsp } from "./tsp.js";
 import { readParamsFromUrl, writeParamsToUrl } from "./urlState.js";
+
+const dat = datNs.default;
+const paper = paperNs.default;
+const saveAs = fileSaverNs.default;
 
 const MARGIN = 0.08;
 const WEB_COLOR = "#b1ede8";
@@ -41,9 +45,8 @@ export default class WebSketch {
     this.initRng();
     this.initGui();
     this.initKeyboard();
-    this.initResize();
 
-    paper.view.onResize = () => this.draw();
+    paper.view.on("resize", () => this.draw());
 
     const savedBatches = this.params.growBatches || 0;
     this.reset(false);
@@ -61,15 +64,19 @@ export default class WebSketch {
     this.rng = seedrandom(String(this.params.seed));
   }
 
-  random(min = 0, max = 1) {
-    if (max === undefined) {
+  random(min, max) {
+    if (arguments.length === 0) {
+      return this.rng();
+    }
+    if (arguments.length === 1) {
       return this.rng() * min;
     }
     return this.rng() * (max - min) + min;
   }
 
-  randomInt(max) {
-    return Math.floor(this.random(max));
+  randomInt(exclusiveMax) {
+    if (exclusiveMax <= 0) return 0;
+    return Math.floor(this.rng() * exclusiveMax);
   }
 
   get viewWidth() {
@@ -441,12 +448,6 @@ export default class WebSketch {
       } else if (event.key === "s" || event.key === "S") {
         this.exportSVG();
       }
-    });
-  }
-
-  initResize() {
-    window.addEventListener("resize", () => {
-      this.draw();
     });
   }
 }
